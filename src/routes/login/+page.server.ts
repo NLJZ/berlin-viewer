@@ -1,20 +1,8 @@
 import type { PageServerLoad, Actions } from "./$types";
+import { redirect } from '@sveltejs/kit';
 
-export const load = (async ({ cookies, fetch }) => {
-  let data;
-  const token = cookies.get("AuthorizationToken");
-  if (!token) return { data };
-  const res = await fetch("http://localhost:4000/users/authenticate", {
-    mode: "cors",
-    credentials: "include",
-    headers: { Authentication: `${token}` },
-  });
-  if (res.status === 404) return data;
-  data = await res.json();
-  console.log("load");
-  return {
-    data,
-  };
+export const load = (async () => {
+    return {};
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -23,7 +11,7 @@ export const actions = {
     const email = data.get("email");
     const password = data.get("password");
     let responseData;
-    try {
+
       const res = await fetch("http://localhost:4000/users/login", {
         method: "POST",
         body: JSON.stringify({ email: email, password: password }),
@@ -31,9 +19,9 @@ export const actions = {
       });
 
       if (!res.ok || !res) {
-        console.log(res);
-        throw new Error("HTTP error " + res.status);
+        throw redirect(303, '/login');
       }
+      
       responseData = await res.json();
 
       cookies.set("AuthorizationToken", `Bearer ${responseData.token}`, {
@@ -43,13 +31,10 @@ export const actions = {
         sameSite: "strict",
         maxAge: 8 * 60 * 60 * 24,
       });
-      return { success: true };
-    } catch (error) {
-      console.log("An error occurred:", error, "you dont like that");
-    }
+      throw redirect(303, '/admin');
   },
 
-  logout: async ({ cookies, request }) => {
+  logout: async ({ cookies }) => {
     cookies.delete("AuthorizationToken");
     return { success: true };
   },
