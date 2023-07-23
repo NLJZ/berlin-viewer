@@ -1,5 +1,6 @@
 <script lang="ts">
   import '../app.css';
+  import { Modals, closeModal } from 'svelte-modals';
   import Logo from '$lib/svg/Logo.svelte';
 </script>
 
