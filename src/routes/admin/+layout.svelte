@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Modals, closeModal } from 'svelte-modals'
     import { authenticated } from "$lib/stores/stores";
     import { onMount } from 'svelte';
   
@@ -16,19 +17,25 @@
   
   
   <div class="container">
-    <div class="sidenav">
-        <a href="/listings">Listings</a>
-        <a href="/venues">Venues</a>
-        <a href="/users">Users</a>
-    </div>
-    <div>
     <slot/>
-    </div>
+    <Modals>
+      <div
+        slot="backdrop"
+        class="backdrop"
+        on:click={closeModal}
+        on:keydown={closeModal}
+        role="button"
+        tabindex="0"
+      />
+    </Modals>
   </div>
+
+
 
   <style>
     .container {
         height: 100%;
+        padding: 20px;
     }
     .sidenav {
         height: 100%;
@@ -44,4 +51,14 @@
         display: flex;
         flex-direction: column;
     }
+
+  .backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0,0,0,0.50);
+    z-index: 6;
+  }
   </style>
